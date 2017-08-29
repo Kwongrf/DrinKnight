@@ -10,20 +10,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.kwong.drinknight.MainActivity;
-import com.kwong.drinknight.chartview.MyChartView;
 import com.kwong.drinknight.R;
-import com.kwong.drinknight.chartview.SingleView;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 public class ChartViewActivity extends AppCompatActivity {
 
@@ -45,13 +33,12 @@ public class ChartViewActivity extends AppCompatActivity {
 
         myChartView = (MyChartView) findViewById(R.id.my_chart_view);
         initChatView();
-
         initSingle();
     }
 
     private void initChatView() {
 
-        myChartView.setLefrColorBottom(getResources().getColor(R.color.leftColorBottom));
+        myChartView.setLeftColorBottom(getResources().getColor(R.color.leftColorBottom));
         myChartView.setLeftColor(getResources().getColor(R.color.leftColor));
         myChartView.setRightColor(getResources().getColor(R.color.rightColor));
         myChartView.setRightColorBottom(getResources().getColor(R.color.rightBottomColor));
@@ -62,22 +49,25 @@ public class ChartViewActivity extends AppCompatActivity {
 
         relativeLayout = (RelativeLayout) findViewById(R.id.linearLayout);
         relativeLayout.removeView(llChart);
-        Random random = new Random();
-        while (chartList.size() < 24) {
+        //置数
+
+        /*Random random = new Random();
+        while (chartList.size() < 60) {
             int randomInt = random.nextInt(100);
             chartList.add((float) randomInt);
-        }
+        }*/
+
         myChartView.setList(chartList);
         myChartView.setListener(new MyChartView.getNumberListener() {
             @Override
             public void getNumber(int number, int x, int y) {
                 relativeLayout.removeView(llChart);
                 //反射加载点击柱状图弹出布局
-                llChart = (LinearLayout) LayoutInflater.from(ChartViewActivity.this).inflate(R.layout.layout_shouru_zhichu, null);
-                TextView tvZhichu = (TextView) llChart.findViewById(R.id.tv_zhichu);
-                TextView tvShouru = (TextView) llChart.findViewById(R.id.tv_shouru);
-                tvZhichu.setText((number + 1) + "月支出" + " " + chartList.get(number * 2));
-                tvShouru.setText ( "收入: " + chartList.get(number * 2 + 1));
+                llChart = (LinearLayout) LayoutInflater.from(ChartViewActivity.this).inflate(R.layout.layout_suggest_fact, null);
+                TextView tvSuggect = (TextView) llChart.findViewById(R.id.tv_fact);
+                TextView tvFact = (TextView) llChart.findViewById(R.id.tv_suggest);
+                tvSuggect.setText((number + 1) + "月支出" + " " + chartList.get(number * 2));
+                tvFact.setText ( "收入: " + chartList.get(number * 2 + 1));
                 llChart.measure(0, 0);//调用该方法后才能获取到布局的宽度
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
                         RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -101,6 +91,7 @@ public class ChartViewActivity extends AppCompatActivity {
         mMySingleChartView = (SingleView) findViewById(R.id.my_single_chart_view);
         rlSingle = (RelativeLayout) findViewById(R.id.rl_single);
         singlelist = new ArrayList<>();
+        //置数
         Random random = new Random();
         while (singlelist.size() < 12) {
             int randomInt = random.nextInt(100);
@@ -114,8 +105,8 @@ public class ChartViewActivity extends AppCompatActivity {
             @Override
             public void getNumber(int number, int x, int y) {
                 rlSingle.removeView(llSingle);
-                llSingle = (LinearLayout) LayoutInflater.from(ChartViewActivity.this).inflate(R.layout.layout_pro_expense, null);
-                TextView tvMoney = (TextView) llSingle.findViewById(R.id.tv_shouru_pro);
+                llSingle = (LinearLayout) LayoutInflater.from(ChartViewActivity.this).inflate(R.layout.layout_month_drink, null);
+                TextView tvMoney = (TextView) llSingle.findViewById(R.id.tv_month_fact);
                 tvMoney.setText((number + 1) + "月支出" + (singlelist.get(number)));
                 llSingle.measure(0, 0);
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,

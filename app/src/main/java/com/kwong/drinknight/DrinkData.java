@@ -10,7 +10,7 @@ public class DrinkData {
     private String id;
     private String name;
     private String time;
-    private String dose;
+    private float dose;
 
     public String getId() {
         return id;
@@ -24,7 +24,7 @@ public class DrinkData {
         return time;
     }
 
-    public String getDose() {
+    public float getDose() {
         return dose;
     }
 
@@ -40,7 +40,7 @@ public class DrinkData {
         this.time = time;
     }
 
-    public void setDose(String dose) {
+    public void setDose(float dose) {
         this.dose = dose;
     }
 }

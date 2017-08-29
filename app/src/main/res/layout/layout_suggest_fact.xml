@@ -5,7 +5,7 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/tv_shouru"
+        android:id="@+id/tv_suggest"
         android:textColor="#FA6B7D"
         android:textSize="14sp"
         android:layout_width="wrap_content"
@@ -13,7 +13,7 @@
 
     <TextView
         android:textSize="14sp"
-        android:id="@+id/tv_zhichu"
+        android:id="@+id/tv_fact"
         android:layout_marginLeft="10dp"
         android:textColor="#f8935c"
         android:layout_width="wrap_content"

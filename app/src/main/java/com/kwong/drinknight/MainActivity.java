@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static TextView suggestedNextTimeText;
     private static UserData userData;
     private static List<DrinkData>drinkDataList;
-    public static String suggestedVolumeDose;
+    public static float suggestedVolumeDose;
     public static String suggestedNextTime;
     private static MySinkingView mSinkingView;
 
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //开启关闭Service
         startService(intent);
         //设置一个Toast来提醒使用者提醒的功能已经开始
-        Toast.makeText(MainActivity.this,"提醒喝水的功能已经开启",Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this,"提醒喝水的功能已经开启",Toast.LENGTH_LONG).show();
         Button userDataButton = (Button)findViewById(R.id.user_data_bt);
         Button todayDataButton = (Button)findViewById(R.id.today_data_bt);
         Button rankListButton = (Button)findViewById(R.id.rank_list_bt);
@@ -83,8 +83,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //获得饮水数据
                     OkHttpClient client1 = new OkHttpClient();
                     Request request1 = new Request.Builder()
-                            .url("http://192.168.87.2/drinking_data.json")
+                            //.url("http://192.168.87.2/drinking_data.json")
                             //.url("http://140.255.159.226:9090/drinking_data.json")
+                            .url("http://10.8.189.234/drinking_data.json")
                             .build();
                     //Log.d("MainActivity","request success");
                     Response response1 = client1.newCall(request1).execute();
@@ -94,9 +95,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //获得用户数据
                     OkHttpClient client2 = new OkHttpClient();
                     Request request2 = new Request.Builder()
-                            .url("http://192.168.87.2/user_data.json")
+                            //.url("http://192.168.87.2/user_data.json")
                             //.url("http://140.255.159.226:9090/user_data.json")
-                            //.url("http://10.8.189.234/user_data.json")
+                            .url("http://10.8.189.234/user_data.json")
                             .build();
                     //Log.d("MainActivity","request2 success");
                     Response response2 = client2.newCall(request2).execute();
@@ -152,12 +153,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static void handleDatas(Activity activity, List<DrinkData> drinkDataList, UserData userData) {
         float volumeDose = 0;
         String lastTime = new String();
-        String lastDose = new String();
+        float lastDose = 0;
         String userName = new String();
         //Log.d("MainActivity","handleDatas "+drinkDataList.size()+" "+drinkDataList.get(0).getDose());
         for (DrinkData oneData : drinkDataList) {
             //Log.d("MainActivity","handleDatas "+oneData.getDose()+" "+oneData.getName()+" ");
-            volumeDose = volumeDose + parseFloat(oneData.getDose());
+            volumeDose = volumeDose + oneData.getDose();
             lastTime = oneData.getTime();
             lastDose = oneData.getDose();
             userName = oneData.getName();
@@ -165,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Log.d("MainActivity","handleDatas ok");
         suggestedVolumeDose = calculateSuggest(userData);
         suggestedNextTime = lastTime + 30;
-        final float per = (volumeDose / Float.parseFloat(suggestedVolumeDose));
+        final float per = volumeDose / suggestedVolumeDose;
         if (per <= 1) {
             mSinkingView.setPercent(per);
             //Log.d("MainActivity","mSinkingView.setPercent"+per);
@@ -180,31 +181,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         //Log.d("MainActivity","mSinkingView.setPercent success");
         final String finalVolumeDose = String.valueOf(volumeDose);
-        final String finalLastDose = lastDose;
+        final float finalLastDose = lastDose;
         final String finalLastTime = lastTime;
         final String finalUserName = userName;
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 volumeDoseText.setText(finalVolumeDose);
-                lastDoseText.setText(finalLastDose);
+                lastDoseText.setText(String.valueOf(finalLastDose));
                 lastTimeText.setText(finalLastTime);
                 userNameText.setText(finalUserName);
-                suggestedVolumeDoseText.setText(suggestedVolumeDose);
+                suggestedVolumeDoseText.setText(String.valueOf(suggestedVolumeDose));
                 suggestedNextTimeText.setText(suggestedNextTime);
 
             }
         });
         //Log.d("MainActivity","handleDatas end");
     }
-    private static String calculateSuggest(UserData userData) {
+    private static float calculateSuggest(UserData userData) {
         int age = Integer.parseInt(userData.getAge());
         int height = Integer.parseInt(userData.getHeight());
         int weight = Integer.parseInt(userData.getWeight());
         if ((userData.getGender()).equals("man")){
-            return String.valueOf((age-40)*5+height*10+weight*20+1000);
+            return (age-40)*5+height*10+weight*20+1000;
         }else {
-            return String.valueOf((age-40)*5+height*10+weight*20+2000);
+            return (age-40)*5+height*10+weight*20+2000;
         }
     }
 
@@ -227,6 +228,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
                 break;
             case R.id.today_data_bt:
+
                 Intent intent1 = new Intent(MainActivity.this,ChartViewActivity.class);
                 startActivity(intent1);
             default:

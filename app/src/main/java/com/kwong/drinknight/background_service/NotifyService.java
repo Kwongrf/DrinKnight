@@ -7,24 +7,11 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.SystemClock;
 
-import com.kwong.drinknight.DetectListener;
-import com.kwong.drinknight.DetectTask;
-
 public class NotifyService extends Service {
 
-    private DetectTask detectTask;
 
-    private DetectListener listener = new DetectListener() {
-        @Override
-        public void onTimeBeforeDrink(int time) {
 
-        }
 
-        @Override
-        public void onTimeToDrink() {
-
-        }
-    };
     public NotifyService() {
         //Log.d("NotifyService","NotifyService is created");
     }
@@ -38,9 +25,9 @@ public class NotifyService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
         //读者可以修改此处的Minutes从而改变提醒间隔时间
-        //此处是设置每隔90分钟启动一次
-        //这是90分钟的毫秒数
-        int Minutes = 1*60*1000;
+        //此处是设置每隔5分钟启动一次
+        //这是5分钟的毫秒数
+        int Minutes = 5*60*1000;
         //SystemClock.elapsedRealtime()表示1970年1月1日0点至今所经历的时间
         long triggerAtTime = SystemClock.elapsedRealtime() + Minutes;
         //此处设置开启AlarmReceiver这个Service

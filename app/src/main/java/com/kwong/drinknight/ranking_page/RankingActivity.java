@@ -6,8 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.kwong.drinknight.R;
@@ -23,11 +27,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.kwong.drinknight.utils.Global.SERVER_URL;
+
 public class RankingActivity extends AppCompatActivity {
 
-    //String uriStr ="http://10.8.189.234/image/"
-    //String uriStr ="http://140.255.159.226:9090/image/";
-    String uriStr ="http://192.168.87.2/image/";
+    String uriStr =SERVER_URL+"/image/";
+
     private ImageView headImage;
     private List<Person>personList = new ArrayList<>();
     private RecyclerView recyclerView ;
@@ -37,6 +42,7 @@ public class RankingActivity extends AppCompatActivity {
         setContentView(R.layout.layout_ranking);
         headImage=(ImageView)findViewById(R.id.image_rank);
         recyclerView = (RecyclerView)findViewById(R.id.rank_list);
+        overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
         initPersons();
     }
 
@@ -47,30 +53,31 @@ public class RankingActivity extends AppCompatActivity {
                 try{
                     OkHttpClient client= new OkHttpClient();
                     Request request = new Request.Builder()
-                           .url("http://192.168.87.2/ranking_data.json")
-                            //.url("http://140.255.159.226:9090/ranking_data.json")
-                            //.url("http://10.8.189.234/ranking_data.json")
+                            .url(SERVER_URL+"/user/krf/rankdatas/")
                             .build();
                     Response response = client.newCall(request).execute();
                     //Log.d("RankingActivity","Response success");
                     String responseData = response.body().string();
                     personList= parseJSONWithGSONtoRankData(responseData);
                     //Log.d("RankingActivity","personList GSON success"+personList.size());
-                    final Bitmap headimage = getBitmap(uriStr+ personList.get(0).getImageName());
                     //showRankPersons(rankPersons);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             try {
+                                String imageUrl;
 
-                                headImage.setImageBitmap(headimage);
-                                //Log.d("RankingActivity","initPersons success"+personList.size());
+                                imageUrl = SERVER_URL+"/media/images/"+personList.get(0).getAccount()+".jpg";
+                                Glide.with(RankingActivity.this).load(imageUrl).error(R.mipmap.ic_launcher).into(headImage);
+
+
+                                Log.d("RankingActivity","initPersons success"+personList.size());
 
                                 LinearLayoutManager layoutManager = new LinearLayoutManager(RankingActivity.this);
                                 recyclerView.setLayoutManager(layoutManager);
                                 PersonAdapter adapter = new PersonAdapter(personList);
                                 recyclerView.setAdapter(adapter);
-                                //Log.d("RankingActivity","recyclerView success");
+                                Log.d("RankingActivity","recyclerView success");
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -84,34 +91,22 @@ public class RankingActivity extends AppCompatActivity {
 
     }
 
-/*    private void showRankPersons(List<Person> rankPersons) {
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        });
-    }
-*/
     private List<Person> parseJSONWithGSONtoRankData(String jsonData) {
         Gson gson = new Gson();
         List<Person> personList = gson.fromJson(jsonData, new TypeToken<List<Person>>(){}.getType());
         return personList;
     }
 
-    public static Bitmap getBitmap(String path) throws IOException {
 
-        URL url = new URL(path);
-        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-        conn.setConnectTimeout(5000);
-        conn.setRequestMethod("GET");
-        if(conn.getResponseCode() == 200){
-            InputStream inputStream = conn.getInputStream();
-            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-            return bitmap;
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode==KeyEvent.KEYCODE_BACK){
+
+            this.finish();  //finish当前activity
+            overridePendingTransition(R.anim.in_from_left,
+                    R.anim.out_from_right);
+            return true;
         }
-        return null;
+        return super.onKeyDown(keyCode, event);
     }
 
 }

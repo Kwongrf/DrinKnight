@@ -9,11 +9,10 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.kwong.drinknight.MainActivity;
+import com.kwong.drinknight.home_page.MainActivity;
 import com.kwong.drinknight.R;
-import com.kwong.drinknight.background_service.NotifyService;
 
-import static com.kwong.drinknight.MainActivity.sendRequestWithOkHttp;
+import static com.kwong.drinknight.home_page.MainActivity.sendRequestWithOkHttp;
 public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
@@ -23,7 +22,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         PendingIntent pi = PendingIntent.getActivity(context,0,i,0);
         Notification builder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_water)
                 .setTicker("您有一段时间没有喝水啦！")
                 .setContentIntent(pi)
                 .setContentTitle("该喝水了")

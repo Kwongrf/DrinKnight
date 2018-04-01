@@ -31,6 +31,7 @@
         android:required="true" />
 
     <application
+
         android:name=".utils.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -65,7 +66,7 @@
         <activity android:name=".drinking_data_view.TodayData" />
         <activity android:name=".utils.ChoosePhotoActivity" />
         <activity android:name=".set_alarm_page.AlarmSetActivity" />
-
+        <activity android:name=".weather.WeatherActivity" />
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.kwong.drinknight.fileprovider"

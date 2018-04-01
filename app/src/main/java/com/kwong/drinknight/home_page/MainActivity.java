@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -35,6 +37,7 @@ import com.kwong.drinknight.step_page.StepActivity;
 import com.kwong.drinknight.user_data_page.UserData;
 import com.kwong.drinknight.user_data_page.UserDataActivity;
 import com.kwong.drinknight.utils.UpdateAll;
+import com.kwong.drinknight.weather.WeatherActivity;
 
 
 import org.json.JSONObject;
@@ -59,12 +62,14 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.kwong.drinknight.utils.Global.SERVER_URL;
+import static com.kwong.drinknight.utils.Global.day_flag;
 import static com.kwong.drinknight.utils.Global.drinkDataList;
 import static com.kwong.drinknight.utils.Global.suggestedVolumeDose;
 import static com.kwong.drinknight.utils.Global.suggestedNextTime;
 import static com.kwong.drinknight.utils.Global.sumdrink;
 import static com.kwong.drinknight.utils.Global.userData;
 import static com.kwong.drinknight.utils.Global.volumeDose;
+
 import static com.kwong.drinknight.utils.UpdateAll.parseJSONWithGSONtoUserData;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -153,11 +158,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Intent intent2 = new Intent(MainActivity.this,StepActivity.class);
                         startActivity(intent2);
                         break;
-                    case R.id.nav_cup:
-
-                        showUserCup(userData);
-
+                    case R.id.nav_weather:
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                        //if (prefs.getString("weather",null) != null){
+                            Intent intent3 = new Intent(MainActivity.this,WeatherActivity.class);
+                            startActivity(intent3);
+                        //}
                         break;
+                    case R.id.nav_cup:
+                        showUserCup(userData);
+                        break;
+                    case R.id.nav_exit:
+                        finish();
                     default:
                 }
                 return true;
@@ -261,23 +273,66 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     //处理数据
     public static void handleDatas(Activity activity, List<DrinkData> drinkDataList, UserData userData) {
-
+        Calendar cal = Calendar.getInstance();// 当前日期
+        int hour = cal.get(Calendar.HOUR_OF_DAY);// 获取小时
+        final int start1 =6;
+        final int end1 =12;
+        final int start2 =12;
+        final int end2 =18;
+        System.out.println(volumeDose[0]+" 6");
+        System.out.println(volumeDose[1]+" 6");
+        System.out.println(volumeDose[2]+" 6");
+        volumeDose[0]=0;
+        volumeDose[1]=0;
+        volumeDose[2]=0;
+        if (hour >= start1 && hour < end1) {
+            System.out.println("上午");
+            day_flag=0;
+        } else  if (hour >= start2 && hour < end2)
+            {
+            System.out.println("下午");
+                day_flag=1;
+        }
+        else
+        {
+            System.out.println("晚上");
+            day_flag=2;
+        }
         String lastTime = new String();
         String lastDose = new String();
         String userName = new String();
         String lastDate = new String();
         userName=userData.getUserName();
-        volumeDose=0;
+
         //Log.d("MainActivity","handleDatas "+drinkDataList.size()+" "+drinkDataList.get(0).getDose());
         for (DrinkData oneData : drinkDataList) {
             //Log.d("MainActivity","handleDatas "+oneData.getDose()+" "+oneData.getName()+" ");
             lastTime = oneData.getTime();
-            lastDose = String.valueOf(oneData.getDose());
-            volumeDose += oneData.getDose();
-        }
-        sumdrink = volumeDose;
 
-        System.out.println(sumdrink+"444");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            try {
+                Date date = format.parse(lastTime);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(date);
+                int day_hour = calendar.get(Calendar.HOUR_OF_DAY);
+                lastDose = String.valueOf(oneData.getDose());
+                if (day_hour >= start1 && day_hour < end1) {
+                    System.out.println(lastTime);
+                    volumeDose[0] += oneData.getDose();
+                } else  if (day_hour >= start2 && day_hour < end2)
+                {
+                    volumeDose[1] += oneData.getDose();
+                }
+                else
+                {
+                    volumeDose[2] += oneData.getDose();
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        }
+
             suggestedVolumeDose = calculateSuggest(userData);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date date = null;
@@ -290,7 +345,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ca.setTime(date);
             ca.add(Calendar.HOUR_OF_DAY, 1);
             suggestedNextTime = sdf.format(ca.getTime());
-            final float per = (volumeDose / Float.parseFloat(suggestedVolumeDose));
+            final float per = (volumeDose[day_flag] / (Float.parseFloat(suggestedVolumeDose)/3));
             if (per <= 1) {
                 mSinkingView.setPercent(per);
                 //Log.d("MainActivity","mSinkingView.setPercent"+per);
@@ -303,8 +358,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else {
                 mSinkingView.setPercent(1);
             }
+
+        System.out.println(day_flag+"44353");
             //Log.d("MainActivity","mSinkingView.setPercent success");
-            final String finalVolumeDose = String.valueOf(volumeDose);
+            final String finalVolumeDose = String.valueOf(volumeDose[day_flag]);
             final String finalLastDose = lastDose;
             final String finalLastTime = lastTime;
             final String finalUserName = userName;
@@ -322,7 +379,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 }
             });
-        volumeDose=0;
     }
     private static String calculateSuggest(UserData userData) {
         int age = userData.getAge();
@@ -330,9 +386,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         float weight = userData.getWeight();
         if (userData != null && userData.getGender()!=null){
             if (userData.getGender().equals("man")){
-                return String.valueOf((age-40)*5+height*10+weight*20+1000);
+                return String.valueOf((int)(weight*40));
             }else {
-                return String.valueOf((age-40)*5+height*10+weight*20+2000);
+                return String.valueOf((int)(weight*age/996.16));
             }
         }
        return "999999";
@@ -345,6 +401,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     }
+
 
 
     @Override
@@ -377,15 +434,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    //点击返回键返回桌面而不是退出程序
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode==KeyEvent.KEYCODE_BACK){
-
-            this.finish();  //finish当前activity
-            overridePendingTransition(R.anim.in_from_left,
-                    R.anim.out_from_right);
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Intent home = new Intent(Intent.ACTION_MAIN);
+            home.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            home.addCategory(Intent.CATEGORY_HOME);
+            startActivity(home);
             return true;
         }
+//        if(keyCode==KeyEvent.KEYCODE_BACK){
+//            this.finish();  //finish当前activity
+//            overridePendingTransition(R.anim.in_from_left,
+//                    R.anim.out_from_right);
+//            return true;
+//        }
         return super.onKeyDown(keyCode, event);
     }
 

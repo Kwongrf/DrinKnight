@@ -2,9 +2,12 @@ package com.kwong.drinknight.cup_page;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -55,6 +58,14 @@ public class CupActivity extends AppCompatActivity implements View.OnClickListen
 
         cupID2.setText(datas[1]);
         cupID3.setText(datas[2]);
+
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar_cup);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_backup);
+        }
     }
 
     @Override
@@ -273,5 +284,15 @@ public class CupActivity extends AppCompatActivity implements View.OnClickListen
     }
 
 
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
 }

@@ -2,6 +2,7 @@ package com.kwong.drinknight.utils;
 
 import com.kwong.drinknight.home_page.DrinkData;
 import com.kwong.drinknight.user_data_page.UserData;
+import com.kwong.drinknight.weather.gson.Weather;
 
 import java.util.List;
 
@@ -22,6 +23,8 @@ public class Global {
     public static String suggestedVolumeDose;
     public static String suggestedNextTime;
     public static double sumdrink;
-    public static  float volumeDose = 0;
+    public static  float volumeDose[]={0,0,0};
+    public static int day_flag;
+    public static Weather nowWeather;
 
 }

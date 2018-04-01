@@ -4,9 +4,12 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -130,6 +133,13 @@ public class TodayData extends AppCompatActivity implements View.OnClickListener
 
         overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
 
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar_chart);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_backup);
+        }
       //  getAxisXLables();//获取x轴的标注
      //  getAxisPoints();//获取坐标点
     //    initLineChart();//初始化
@@ -484,5 +494,15 @@ protected void parse_day_data(){
             e.printStackTrace();
         }
     }
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                break;
+            default:
+                break;
+        }
+        return true;
     }
+}

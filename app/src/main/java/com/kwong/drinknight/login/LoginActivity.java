@@ -126,7 +126,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             StrictMode.setThreadPolicy(policy);
         }
 
-        imageButton = (ImageButton)findViewById(R.id.change_url);
+        /*imageButton = (ImageButton)findViewById(R.id.change_url);
         final EditText et = new EditText(LoginActivity.this);//输入信息的
         imageButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -148,7 +148,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         .setNegativeButton("取消",null)
                         .show();
             }
-        });
+        });*/
         mAccountView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
         pref = PreferenceManager.getDefaultSharedPreferences(this);
